@@ -181,6 +181,52 @@ app.post('/list', (req, res) => {
         .json({id});
 })
 
+app.delete('/list/:id', (req, res) => {
+    const {id} = req.params;
+
+    const listIndex = lists.findIndex(li => li.id == id);
+
+    if(listIndex === -1) {
+        logger.error(`List with id ${id} not found.`);
+        return res
+            .status(404)
+            .send('Not found');
+    }
+
+    lists.splice(listIndex, 1);
+
+    logger.info(`List with id ${id} deleted`);
+    res
+        .status(204)
+        .end();
+})
+
+app.delete('/card/:id', (req, res) => {
+    const {id} = req.params;
+
+    const cardIndex = cards.findIndex(c => c.id == id);
+
+    if(cardIndex === -1) {
+        logger.error(`Card with id ${id} not found.`);
+        return res
+            .status(404)
+            .send('Not found');
+    }
+
+    lists.forEach(list => {
+        const cardIds = list.cardIds.filter(cid => cid !== id)
+        list.cardIds =  cardIds;
+    });
+
+    cards.splice(cardIndex, 1);
+
+    logger.info(`Card with id ${id} deleted`);
+
+    res
+        .status(204)
+        .end();
+})
+
 app.use(function errorHandler(error, req, res, next) {
     let response
     if (NODE_ENV === 'production') {
