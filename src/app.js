@@ -4,7 +4,8 @@ const morgan = require('morgan')
 const cors = require('cors')
 const helmet = require('helmet')
 const { NODE_ENV } = require('./config')
-const winston = require ('winston');
+const winston = require ('winston')
+const uuid = require('uuid/v4');
 
 const logger = winston.createLogger({
     level: 'info',
@@ -95,6 +96,43 @@ app.get('/list/:id', (req, res) => {
     }
 
     res.json(list);
+})
+
+app.post('/card', (req, res) => {
+    const { title, content } = req.body;
+
+    if(!title) {
+        logger.error(`Title is required`);
+        return res
+            .status(400)
+            .send('Invalid data');
+    }
+
+    if(!content) {
+        logger.error(`Content is required`);
+        return res
+            .status(400)
+            .send('Invalid data');
+
+    }
+
+    const id = uuid();
+
+    const card = {
+        id, 
+        title, 
+        content
+    };
+
+    cards.push(card); //pushes to card array
+
+    logger.info(`Card with ${id} created`);
+
+    res
+        .status(201)
+        .location(`http://localhost:8000/card/${id}`)
+        .json(card);
+        
 })
 
 app.use(function errorHandler(error, req, res, next) {
