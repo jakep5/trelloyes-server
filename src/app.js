@@ -5,7 +5,8 @@ const cors = require('cors')
 const helmet = require('helmet')
 const { NODE_ENV } = require('./config')
 const winston = require ('winston')
-const uuid = require('uuid/v4');
+const uuid = require('uuid/v4')
+const cardRouter = require('./card/card-router');
 
 const logger = winston.createLogger({
     level: 'info',
@@ -55,6 +56,8 @@ app.use(function validateBearerToken(req, res, next) {
 
     next();
 })
+
+app.use(cardRouter)
 
 app.get('/', (req, res) => {
     res.send('Hello, boilerplate!')
